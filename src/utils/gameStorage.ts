@@ -57,7 +57,7 @@ export const clearGameState = (): void => {
 export const hasStoredGame = (): boolean => {
   try {
     return sessionStorage.getItem(STORAGE_KEY) !== null;
-  } catch (error) {
+  } catch {
     return false;
   }
 };

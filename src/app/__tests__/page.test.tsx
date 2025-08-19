@@ -17,7 +17,14 @@ jest.mock('../../utils/gameStorage', () => ({
 
 // Mock the child components to focus on integration logic
 jest.mock('../../components/PlayerManagement', () => {
-  return function MockPlayerManagement({ onAddPlayer, onRemovePlayer, onUpdatePlayer, showPlayerManagement, onToggleVisibility, hasRounds }: any) {
+  return function MockPlayerManagement({ onAddPlayer, onRemovePlayer, onUpdatePlayer, showPlayerManagement, onToggleVisibility, hasRounds }: {
+    onAddPlayer: (name: string) => void;
+    onRemovePlayer: (id: string) => void;
+    onUpdatePlayer: (id: string, name: string) => void;
+    showPlayerManagement: boolean;
+    onToggleVisibility: () => void;
+    hasRounds: boolean;
+  }) {
     if (!showPlayerManagement && hasRounds) {
       return (
         <div data-testid="hidden-player-management">
@@ -40,7 +47,10 @@ jest.mock('../../components/PlayerManagement', () => {
 });
 
 jest.mock('../../components/GameComplete', () => {
-  return function MockGameComplete({ winner, onStartNewGame }: any) {
+  return function MockGameComplete({ winner, onStartNewGame }: {
+    winner: { name: string };
+    onStartNewGame: () => void;
+  }) {
     return (
       <div data-testid="game-complete">
         <div>Winner: {winner.name}</div>
@@ -51,7 +61,13 @@ jest.mock('../../components/GameComplete', () => {
 });
 
 jest.mock('../../components/RoundsTable', () => {
-  return function MockRoundsTable({ players, rounds, onAddRound, onUpdateRoundScore, onToggleRoundWinner }: any) {
+  return function MockRoundsTable({ players, rounds, onAddRound, onUpdateRoundScore, onToggleRoundWinner }: {
+    players: Array<{ id: string; name: string }>;
+    rounds: Array<{ roundNumber: number }>;
+    onAddRound: () => void;
+    onUpdateRoundScore: (roundIndex: number, playerId: string, score: number) => void;
+    onToggleRoundWinner: (roundIndex: number, playerId: string) => void;
+  }) {
     return (
       <div data-testid="rounds-table">
         <div>Players: {players.length}</div>
@@ -65,7 +81,9 @@ jest.mock('../../components/RoundsTable', () => {
 });
 
 jest.mock('../../components/Standings', () => {
-  return function MockStandings({ playerRankings }: any) {
+  return function MockStandings({ playerRankings }: {
+    playerRankings: Array<{ id: string; name: string; totalScore: number; wins: number }>;
+  }) {
     return (
       <div data-testid="standings">
         Rankings: {playerRankings.length}
@@ -216,9 +234,7 @@ describe('FiveCrownsScorekeeper Integration', () => {
     expect(screen.getByText('Five Crowns')).toBeInTheDocument();
   });
 
-  it('handles starting a new game', async () => {
-    const user = userEvent.setup();
-    
+  it('handles starting a new game', () => {
     // Create a component that simulates a completed game
     const MockCompletedGame = () => {
       return (
@@ -244,8 +260,7 @@ describe('FiveCrownsScorekeeper Integration', () => {
       expect(screen.queryByTestId('rounds-table')).not.toBeInTheDocument();
     });
 
-    it('prevents adding rounds without players', async () => {
-      const user = userEvent.setup();
+    it('prevents adding rounds without players', () => {
       render(<FiveCrownsScorekeeper />);
       
       // Try to add round without players (should not show rounds table)
