@@ -1,6 +1,7 @@
 'use client';
 
 import { Player, Round } from './types';
+import { getRoundCardValue } from '../utils/cardValues';
 
 interface RoundsTableProps {
   players: Player[];
@@ -24,7 +25,7 @@ export default function RoundsTable({
           onClick={onAddRound}
           className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-900 hover:text-gray-900 transition-colors"
         >
-          + Add Round 1
+          + Add Round ({getRoundCardValue(1)})
         </button>
       </div>
     );
@@ -51,7 +52,7 @@ export default function RoundsTable({
             <tbody className="divide-y divide-gray-200">
               {rounds.map((round, roundIndex) => (
                 <tr key={round.roundNumber} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{round.roundNumber}</td>
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{getRoundCardValue(round.roundNumber)}</td>
                   {players.map(player => {
                     const playerScore = round.scores.find(s => s.playerId === player.id);
                     return (
@@ -90,7 +91,7 @@ export default function RoundsTable({
           onClick={onAddRound}
           className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-900 hover:text-gray-900 transition-colors"
         >
-          + Add Round {rounds.length + 1}
+          + Add Round ({getRoundCardValue(rounds.length + 1)})
         </button>
       )}
     </div>

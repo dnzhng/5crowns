@@ -46,8 +46,9 @@ describe('RoundsTable', () => {
           rounds={[]}
         />
       );
-      
-      expect(screen.getByText('+ Add Round 1')).toBeInTheDocument();
+
+      // First round (round 1) maps to card value "3"
+      expect(screen.getByText('+ Add Round (3)')).toBeInTheDocument();
     });
 
     it('calls onAddRound when add round button is clicked', async () => {
@@ -58,9 +59,10 @@ describe('RoundsTable', () => {
           rounds={[]}
         />
       );
-      
-      await user.click(screen.getByText('+ Add Round 1'));
-      
+
+      // First round (round 1) maps to card value "3"
+      await user.click(screen.getByText('+ Add Round (3)'));
+
       expect(defaultProps.onAddRound).toHaveBeenCalledTimes(1);
     });
   });
@@ -75,11 +77,13 @@ describe('RoundsTable', () => {
       expect(screen.getByText('Bob')).toBeInTheDocument();
     });
 
-    it('displays round numbers correctly', () => {
+    it('displays card values instead of round numbers', () => {
       render(<RoundsTable {...defaultProps} />);
-      
-      expect(screen.getByText('1')).toBeInTheDocument();
-      expect(screen.getByText('2')).toBeInTheDocument();
+
+      // Round 1 should show card value "3"
+      expect(screen.getByText('3')).toBeInTheDocument();
+      // Round 2 should show card value "4"
+      expect(screen.getByText('4')).toBeInTheDocument();
     });
 
     it('displays player scores in input fields', () => {
@@ -151,8 +155,9 @@ describe('RoundsTable', () => {
 
     it('shows add next round button when less than 13 rounds', () => {
       render(<RoundsTable {...defaultProps} />);
-      
-      expect(screen.getByText('+ Add Round 3')).toBeInTheDocument();
+
+      // With 2 rounds, next round is 3, which maps to card value "5"
+      expect(screen.getByText('+ Add Round (5)')).toBeInTheDocument();
     });
 
     it('does not show add round button when 13 rounds exist', () => {
@@ -177,9 +182,9 @@ describe('RoundsTable', () => {
     it('calls onAddRound when add round button is clicked', async () => {
       const user = userEvent.setup();
       render(<RoundsTable {...defaultProps} />);
-      
-      await user.click(screen.getByText('+ Add Round 3'));
-      
+
+      await user.click(screen.getByText('+ Add Round (5)'));
+
       expect(defaultProps.onAddRound).toHaveBeenCalledTimes(1);
     });
   });
