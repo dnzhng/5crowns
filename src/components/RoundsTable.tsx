@@ -52,7 +52,11 @@ export default function RoundsTable({
             <tbody className="divide-y divide-gray-200">
               {rounds.map((round, roundIndex) => (
                 <tr key={round.roundNumber} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{getRoundCardValue(round.roundNumber)}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-900 text-white font-bold text-lg">
+                      {getRoundCardValue(round.roundNumber)}
+                    </div>
+                  </td>
                   {players.map(player => {
                     const playerScore = round.scores.find(s => s.playerId === player.id);
                     return (
