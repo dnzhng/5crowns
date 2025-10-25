@@ -125,12 +125,48 @@ describe('RoundsTable', () => {
     it('handles non-numeric input gracefully', async () => {
       const user = userEvent.setup();
       render(<RoundsTable {...defaultProps} />);
-      
+
       const scoreInput = screen.getByDisplayValue('30');
       await user.clear(scoreInput);
       await user.type(scoreInput, 'abc');
-      
+
       expect(defaultProps.onUpdateRoundScore).toHaveBeenCalledWith(0, '1', 0);
+    });
+
+    it('clears input value on focus when value is 0', async () => {
+      const mockRoundsWithZero: Round[] = [
+        {
+          roundNumber: 1,
+          scores: [
+            { playerId: '1', score: 0, isWinner: false },
+            { playerId: '2', score: 0, isWinner: false }
+          ]
+        }
+      ];
+
+      const user = userEvent.setup();
+      render(<RoundsTable {...defaultProps} rounds={mockRoundsWithZero} />);
+
+      const scoreInputs = screen.getAllByDisplayValue('0');
+
+      // Focus on the input
+      await user.click(scoreInputs[0]);
+
+      // After focus, the input should be cleared (empty string)
+      expect(scoreInputs[0]).toHaveValue(null);
+    });
+
+    it('does not clear input value on focus when value is not 0', async () => {
+      const user = userEvent.setup();
+      render(<RoundsTable {...defaultProps} />);
+
+      const scoreInput = screen.getByDisplayValue('30');
+
+      // Focus on the input
+      await user.click(scoreInput);
+
+      // Value should remain unchanged
+      expect(scoreInput).toHaveValue(30);
     });
 
     it('calls onToggleRoundWinner when winner button is clicked', async () => {

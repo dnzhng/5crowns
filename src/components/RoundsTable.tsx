@@ -63,6 +63,18 @@ export default function RoundsTable({
                             min="0"
                             value={playerScore?.score || 0}
                             onChange={(e) => onUpdateRoundScore(roundIndex, player.id, parseInt(e.target.value) || 0)}
+                            onFocus={(e) => {
+                              // Clear the input if the current value is 0
+                              if (playerScore?.score === 0) {
+                                e.target.value = '';
+                              }
+                            }}
+                            onBlur={(e) => {
+                              // If the input is empty on blur, set it back to 0
+                              if (e.target.value === '') {
+                                onUpdateRoundScore(roundIndex, player.id, 0);
+                              }
+                            }}
                             className="w-16 px-2 py-1 text-center border border-gray-300 rounded focus:outline-none focus:border-gray-900 transition-colors text-gray-900"
                           />
                           <button
