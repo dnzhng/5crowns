@@ -29,12 +29,12 @@ describe('Standings', () => {
     expect(screen.getByText('Diana')).toBeInTheDocument();
   });
 
-  it('shows correct medals for top 3 players', () => {
+  it('shows correct crowns for top 3 players', () => {
     render(<Standings {...defaultProps} />);
-    
-    expect(screen.getByText('🥇')).toBeInTheDocument();
-    expect(screen.getByText('🥈')).toBeInTheDocument();
-    expect(screen.getByText('🥉')).toBeInTheDocument();
+
+    expect(screen.getByText('👑👑👑')).toBeInTheDocument();
+    expect(screen.getByText('👑👑')).toBeInTheDocument();
+    expect(screen.getByText('👑')).toBeInTheDocument();
   });
 
   it('shows numeric position for 4th place and below', () => {
@@ -81,9 +81,9 @@ describe('Standings', () => {
       const singlePlayer = [mockPlayerRankings[0]];
       
       render(<Standings playerRankings={singlePlayer} />);
-      
+
       expect(screen.getByText('Alice')).toBeInTheDocument();
-      expect(screen.getByText('🥇')).toBeInTheDocument();
+      expect(screen.getByText('👑👑👑')).toBeInTheDocument();
       expect(screen.getByText('85')).toBeInTheDocument();
       expect(screen.getByText('5 wins')).toBeInTheDocument();
     });
@@ -109,9 +109,9 @@ describe('Standings', () => {
   describe('with empty rankings', () => {
     it('renders empty standings', () => {
       render(<Standings playerRankings={[]} />);
-      
+
       expect(screen.getByText('Standings')).toBeInTheDocument();
-      expect(screen.queryByText('🥇')).not.toBeInTheDocument();
+      expect(screen.queryByText('👑👑👑')).not.toBeInTheDocument();
     });
   });
 
@@ -125,10 +125,10 @@ describe('Standings', () => {
       }));
       
       render(<Standings playerRankings={manyPlayers} />);
-      
-      expect(screen.getByText('🥇')).toBeInTheDocument();
-      expect(screen.getByText('🥈')).toBeInTheDocument();
-      expect(screen.getByText('🥉')).toBeInTheDocument();
+
+      expect(screen.getByText('👑👑👑')).toBeInTheDocument();
+      expect(screen.getByText('👑👑')).toBeInTheDocument();
+      expect(screen.getByText('👑')).toBeInTheDocument();
       
       // Find the position number 10 (not the score or wins)
       const tenthPositionElement = screen.getAllByText('10').find(el => 
@@ -159,10 +159,10 @@ describe('Standings', () => {
       expect(screen.getByText('Bob')).toBeInTheDocument();
       expect(screen.getByText('Charlie')).toBeInTheDocument();
 
-      // First two should have medals, third should have medal too
-      expect(screen.getByText('🥇')).toBeInTheDocument();
-      expect(screen.getByText('🥈')).toBeInTheDocument();
-      expect(screen.getByText('🥉')).toBeInTheDocument();
+      // First two should have crowns, third should have crown too
+      expect(screen.getByText('👑👑👑')).toBeInTheDocument();
+      expect(screen.getByText('👑👑')).toBeInTheDocument();
+      expect(screen.getByText('👑')).toBeInTheDocument();
     });
   });
 

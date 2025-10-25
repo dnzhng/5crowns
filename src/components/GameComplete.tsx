@@ -40,7 +40,7 @@ export default function GameComplete({ winner, playerRankings, players, rounds, 
                 }`}>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">
-                      {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`}
+                      {index === 0 ? '👑👑👑' : index === 1 ? '👑👑' : index === 2 ? '👑' : `${index + 1}.`}
                     </span>
                     <span className="font-semibold text-lg">{player.name}</span>
                   </div>

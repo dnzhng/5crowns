@@ -21,7 +21,7 @@ export default function Standings({ playerRankings }: StandingsProps) {
               }`}>
                 <div className="flex items-center gap-3">
                   <span className="text-lg">
-                    {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}`}
+                    {index === 0 ? '👑👑👑' : index === 1 ? '👑👑' : index === 2 ? '👑' : `${index + 1}`}
                   </span>
                   <span className="font-medium text-gray-900">{player.name}</span>
                 </div>

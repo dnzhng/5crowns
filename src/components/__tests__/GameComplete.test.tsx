@@ -83,13 +83,13 @@ describe('GameComplete', () => {
     expect(screen.getAllByText('Diana').length).toBeGreaterThan(0);
   });
 
-  it('displays correct medals for top 3 players', () => {
+  it('displays correct crowns for top 3 players', () => {
     render(<GameComplete {...defaultProps} />);
-    
+
     const rankings = screen.getByText('Final Rankings').closest('div');
-    expect(rankings).toHaveTextContent('🥇');
-    expect(rankings).toHaveTextContent('🥈');
-    expect(rankings).toHaveTextContent('🥉');
+    expect(rankings).toHaveTextContent('👑👑👑');
+    expect(rankings).toHaveTextContent('👑👑');
+    expect(rankings).toHaveTextContent('👑');
     expect(rankings).toHaveTextContent('4.');
   });
 
@@ -163,8 +163,8 @@ describe('GameComplete', () => {
     render(<GameComplete {...singlePlayerProps} />);
 
     expect(screen.getAllByText('Alice').length).toBeGreaterThan(0);
-    expect(screen.getByText('🥇')).toBeInTheDocument();
-    expect(screen.queryByText('🥈')).not.toBeInTheDocument();
+    expect(screen.getByText('👑👑👑')).toBeInTheDocument();
+    expect(screen.queryByText('👑👑')).not.toBeInTheDocument();
   });
 
   it('displays rankings with proper numbering for ties', () => {
@@ -190,8 +190,8 @@ describe('GameComplete', () => {
 
     render(<GameComplete {...tiedProps} />);
 
-    expect(screen.getByText('🥇')).toBeInTheDocument();
-    expect(screen.getByText('🥈')).toBeInTheDocument();
-    expect(screen.getByText('🥉')).toBeInTheDocument();
+    expect(screen.getByText('👑👑👑')).toBeInTheDocument();
+    expect(screen.getByText('👑👑')).toBeInTheDocument();
+    expect(screen.getByText('👑')).toBeInTheDocument();
   });
 });
