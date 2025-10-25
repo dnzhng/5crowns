@@ -61,9 +61,10 @@ jest.mock('../../components/GameComplete', () => {
 });
 
 jest.mock('../../components/RoundsTable', () => {
-  return function MockRoundsTable({ players, rounds, onAddRound, onUpdateRoundScore, onToggleRoundWinner }: {
+  return function MockRoundsTable({ players, rounds, playerOrder, onAddRound, onUpdateRoundScore, onToggleRoundWinner }: {
     players: Array<{ id: string; name: string }>;
     rounds: Array<{ roundNumber: number }>;
+    playerOrder: string[];
     onAddRound: () => void;
     onUpdateRoundScore: (roundIndex: number, playerId: string, score: number) => void;
     onToggleRoundWinner: (roundIndex: number, playerId: string) => void;
@@ -73,6 +74,7 @@ jest.mock('../../components/RoundsTable', () => {
       <div data-testid="rounds-table">
         <div>Players: {players.length}</div>
         <div>Rounds: {rounds.length}</div>
+        <div>Player Order: {playerOrder.length}</div>
         <button onClick={onAddRound}>Add Round</button>
         <button onClick={() => onUpdateRoundScore(0, firstPlayerId, 50)}>Update Score</button>
         <button onClick={() => onToggleRoundWinner(0, firstPlayerId)}>Toggle Winner</button>
@@ -451,7 +453,8 @@ describe('FiveCrownsScorekeeper Integration', () => {
             expect.objectContaining({ name: 'Test Player' })
           ]),
           rounds: [],
-          showPlayerManagement: true
+          showPlayerManagement: true,
+          playerOrder: []
         });
       });
     });

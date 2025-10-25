@@ -8,11 +8,13 @@ import RoundsTable from '../components/RoundsTable';
 import Standings from '../components/Standings';
 import { saveGameState, loadGameState, clearGameState } from '../utils/gameStorage';
 import { sortPlayerRankings } from '../utils/playerSorting';
+import { shuffleArray } from '../utils/playerOrder';
 
 export default function FiveCrownsScorekeeper() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [rounds, setRounds] = useState<Round[]>([]);
   const [showPlayerManagement, setShowPlayerManagement] = useState(true);
+  const [playerOrder, setPlayerOrder] = useState<string[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Load game state from session storage on mount
@@ -23,6 +25,7 @@ export default function FiveCrownsScorekeeper() {
         setPlayers(savedState.players);
         setRounds(savedState.rounds);
         setShowPlayerManagement(savedState.showPlayerManagement);
+        setPlayerOrder(savedState.playerOrder || []);
       }
     } catch (error) {
       console.warn('Failed to load saved game state:', error);
@@ -39,8 +42,9 @@ export default function FiveCrownsScorekeeper() {
       players,
       rounds,
       showPlayerManagement,
+      playerOrder,
     });
-  }, [players, rounds, showPlayerManagement, isLoaded]);
+  }, [players, rounds, showPlayerManagement, playerOrder, isLoaded]);
 
   const addPlayer = (name: string) => {
     const newPlayer: Player = {
@@ -66,7 +70,7 @@ export default function FiveCrownsScorekeeper() {
 
   const addRound = () => {
     if (players.length === 0 || rounds.length >= 13) return;
-    
+
     const newRound: Round = {
       roundNumber: rounds.length + 1,
       scores: players.map(player => ({
@@ -76,10 +80,12 @@ export default function FiveCrownsScorekeeper() {
       }))
     };
     setRounds([...rounds, newRound]);
-    
-    // Hide player management after first round
+
+    // Initialize player order when adding the first round
     if (rounds.length === 0) {
       setShowPlayerManagement(false);
+      const shuffledOrder = shuffleArray(players.map(p => p.id));
+      setPlayerOrder(shuffledOrder);
     }
   };
 
@@ -165,6 +171,7 @@ export default function FiveCrownsScorekeeper() {
   const startNewGame = () => {
     setRounds([]);
     setPlayers([]);
+    setPlayerOrder([]);
     setShowPlayerManagement(true);
     clearGameState(); // Clear session storage when starting new game
   };
@@ -229,6 +236,7 @@ export default function FiveCrownsScorekeeper() {
             <RoundsTable
               players={players}
               rounds={rounds}
+              playerOrder={playerOrder}
               onUpdateRoundScore={updateRoundScore}
               onToggleRoundWinner={toggleRoundWinner}
               onAddRound={addRound}

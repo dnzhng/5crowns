@@ -28,6 +28,7 @@ const mockRounds: Round[] = [
 const defaultProps = {
   players: mockPlayers,
   rounds: mockRounds,
+  playerOrder: ['1', '2'], // Player IDs in turn order
   onUpdateRoundScore: jest.fn(),
   onToggleRoundWinner: jest.fn(),
   onAddRound: jest.fn()
