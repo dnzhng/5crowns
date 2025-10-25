@@ -60,6 +60,13 @@ jest.mock('../../components/GameComplete', () => {
   };
 });
 
+// Mock ScoreGraph component (used by GameComplete)
+jest.mock('../../components/ScoreGraph', () => {
+  return function MockScoreGraph() {
+    return <div data-testid="score-graph">Score Graph</div>;
+  };
+});
+
 jest.mock('../../components/RoundsTable', () => {
   return function MockRoundsTable({ players, rounds, playerOrder, onAddRound, onUpdateRoundScore, onToggleRoundWinner }: {
     players: Array<{ id: string; name: string }>;

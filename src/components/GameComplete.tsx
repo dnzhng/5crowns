@@ -1,14 +1,17 @@
 'use client';
 
-import { PlayerRanking } from './types';
+import { Player, Round, PlayerRanking } from './types';
+import ScoreGraph from './ScoreGraph';
 
 interface GameCompleteProps {
   winner: PlayerRanking;
   playerRankings: PlayerRanking[];
+  players: Player[];
+  rounds: Round[];
   onStartNewGame: () => void;
 }
 
-export default function GameComplete({ winner, playerRankings, onStartNewGame }: GameCompleteProps) {
+export default function GameComplete({ winner, playerRankings, players, rounds, onStartNewGame }: GameCompleteProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-200 p-4">
       <div className="max-w-4xl mx-auto">
@@ -49,7 +52,9 @@ export default function GameComplete({ winner, playerRankings, onStartNewGame }:
               ))}
             </div>
           </div>
-          
+
+          <ScoreGraph players={players} rounds={rounds} />
+
           <button
             onClick={onStartNewGame}
             className="mt-6 px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium text-lg"

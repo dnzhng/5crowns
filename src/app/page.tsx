@@ -192,9 +192,11 @@ export default function FiveCrownsScorekeeper() {
     if (!winner) return null;
     
     return (
-      <GameComplete 
+      <GameComplete
         winner={winner}
         playerRankings={getPlayerRankings()}
+        players={players}
+        rounds={rounds}
         onStartNewGame={startNewGame}
       />
     );
