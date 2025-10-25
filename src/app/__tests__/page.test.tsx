@@ -68,13 +68,14 @@ jest.mock('../../components/RoundsTable', () => {
     onUpdateRoundScore: (roundIndex: number, playerId: string, score: number) => void;
     onToggleRoundWinner: (roundIndex: number, playerId: string) => void;
   }) {
+    const firstPlayerId = players[0]?.id || '1';
     return (
       <div data-testid="rounds-table">
         <div>Players: {players.length}</div>
         <div>Rounds: {rounds.length}</div>
         <button onClick={onAddRound}>Add Round</button>
-        <button onClick={() => onUpdateRoundScore(0, '1', 50)}>Update Score</button>
-        <button onClick={() => onToggleRoundWinner(0, '1')}>Toggle Winner</button>
+        <button onClick={() => onUpdateRoundScore(0, firstPlayerId, 50)}>Update Score</button>
+        <button onClick={() => onToggleRoundWinner(0, firstPlayerId)}>Toggle Winner</button>
       </div>
     );
   };
@@ -162,16 +163,72 @@ describe('FiveCrownsScorekeeper Integration', () => {
   it('toggles round winners correctly', async () => {
     const user = userEvent.setup();
     render(<FiveCrownsScorekeeper />);
-    
+
     // Add player and round
     await user.click(screen.getByText('Add Player'));
     await user.click(screen.getByText('Add Round'));
-    
+
     // Toggle winner
     await user.click(screen.getByText('Toggle Winner'));
-    
+
     // Component should still be functioning (no errors)
     expect(screen.getByTestId('rounds-table')).toBeInTheDocument();
+  });
+
+  it('automatically creates next round when winner is selected', async () => {
+    const user = userEvent.setup();
+    render(<FiveCrownsScorekeeper />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Loading game...')).not.toBeInTheDocument();
+    });
+
+    // Add player and first round
+    await user.click(screen.getByText('Add Player'));
+    await user.click(screen.getByText('Add Round'));
+
+    // Should have 1 round
+    await waitFor(() => {
+      expect(screen.getByText('Rounds: 1')).toBeInTheDocument();
+    });
+
+    // Toggle winner - this should automatically create round 2
+    await user.click(screen.getByText('Toggle Winner'));
+
+    // Should now have 2 rounds
+    await waitFor(() => {
+      expect(screen.getByText('Rounds: 2')).toBeInTheDocument();
+    });
+  });
+
+  it('does not create new round when winner selected on round 13', async () => {
+    // Create a game state with 13 rounds
+    const thirteenRounds = Array.from({ length: 13 }, (_, i) => ({
+      roundNumber: i + 1,
+      scores: [{ playerId: '1', score: 0, isWinner: false }]
+    }));
+
+    const savedState = {
+      players: [{ id: '1', name: 'Test Player' }],
+      rounds: thirteenRounds,
+      showPlayerManagement: false,
+      lastUpdatedAt: '2024-01-01T00:00:00.000Z'
+    };
+
+    mockLoadGameState.mockReturnValue(savedState);
+
+    const user = userEvent.setup();
+    render(<FiveCrownsScorekeeper />);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Loading game...')).not.toBeInTheDocument();
+    });
+
+    // Game should be complete, not showing rounds table
+    await waitFor(() => {
+      expect(screen.queryByTestId('rounds-table')).not.toBeInTheDocument();
+      expect(screen.getByTestId('game-complete')).toBeInTheDocument();
+    });
   });
 
   it('manages player removal functionality', async () => {

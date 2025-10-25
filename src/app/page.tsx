@@ -97,18 +97,43 @@ export default function FiveCrownsScorekeeper() {
   };
 
   const toggleRoundWinner = (roundIndex: number, playerId: string) => {
-    setRounds(rounds.map((round, index) => 
-      index === roundIndex
-        ? {
-            ...round,
-            scores: round.scores.map(s =>
-              s.playerId === playerId 
-                ? { ...s, isWinner: !s.isWinner }
-                : { ...s, isWinner: false } // Only one winner per round
-            )
-          }
-        : round
-    ));
+    setRounds((prevRounds) => {
+      const updatedRounds = prevRounds.map((round, index) =>
+        index === roundIndex
+          ? {
+              ...round,
+              scores: round.scores.map(s =>
+                s.playerId === playerId
+                  ? { ...s, isWinner: !s.isWinner }
+                  : { ...s, isWinner: false } // Only one winner per round
+              )
+            }
+          : round
+      );
+
+      // Check if a winner was just selected (not deselected)
+      const selectedWinner = updatedRounds[roundIndex].scores.find(
+        s => s.playerId === playerId && s.isWinner
+      );
+
+      // Auto-create next round if:
+      // 1. A winner was selected (not deselected)
+      // 2. We're not already at 13 rounds
+      // 3. This is the last round (prevents adding multiple rounds)
+      if (selectedWinner && updatedRounds.length < 13 && roundIndex === updatedRounds.length - 1) {
+        const newRound: Round = {
+          roundNumber: updatedRounds.length + 1,
+          scores: players.map(player => ({
+            playerId: player.id,
+            score: 0,
+            isWinner: false
+          }))
+        };
+        return [...updatedRounds, newRound];
+      }
+
+      return updatedRounds;
+    });
   };
 
   const calculateTotalScore = (playerId: string) => {
