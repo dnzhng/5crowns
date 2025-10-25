@@ -144,19 +144,21 @@ describe('Standings', () => {
   });
 
   describe('with tied scores', () => {
-    it('displays tied players in provided order', () => {
+    it('displays tied players in provided order (should be sorted by wins)', () => {
+      // Note: The sorting should happen in the parent component (page.tsx)
+      // This test verifies that Standings displays players in the order provided
       const tiedPlayers: PlayerRanking[] = [
+        { id: '2', name: 'Bob', totalScore: 100, wins: 5 },
         { id: '1', name: 'Alice', totalScore: 100, wins: 3 },
-        { id: '2', name: 'Bob', totalScore: 100, wins: 3 },
         { id: '3', name: 'Charlie', totalScore: 150, wins: 2 }
       ];
-      
+
       render(<Standings playerRankings={tiedPlayers} />);
-      
+
       expect(screen.getByText('Alice')).toBeInTheDocument();
       expect(screen.getByText('Bob')).toBeInTheDocument();
       expect(screen.getByText('Charlie')).toBeInTheDocument();
-      
+
       // First two should have medals, third should have medal too
       expect(screen.getByText('🥇')).toBeInTheDocument();
       expect(screen.getByText('🥈')).toBeInTheDocument();

@@ -7,6 +7,7 @@ import GameComplete from '../components/GameComplete';
 import RoundsTable from '../components/RoundsTable';
 import Standings from '../components/Standings';
 import { saveGameState, loadGameState, clearGameState } from '../utils/gameStorage';
+import { sortPlayerRankings } from '../utils/playerSorting';
 
 export default function FiveCrownsScorekeeper() {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -118,15 +119,15 @@ export default function FiveCrownsScorekeeper() {
   };
 
   const getPlayerRankings = (): PlayerRanking[] => {
-    return players
+    const rankings = players
       .map(player => ({
         ...player,
         totalScore: calculateTotalScore(player.id),
-        wins: rounds.filter(round => 
+        wins: rounds.filter(round =>
           round.scores.find(s => s.playerId === player.id && s.isWinner)
         ).length
-      }))
-      .sort((a, b) => a.totalScore - b.totalScore);
+      }));
+    return sortPlayerRankings(rankings);
   };
 
   const isGameComplete = () => rounds.length === 13;
