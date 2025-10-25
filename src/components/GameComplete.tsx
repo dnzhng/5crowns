@@ -43,7 +43,7 @@ export default function GameComplete({ winner, playerRankings, onStartNewGame }:
                   </div>
                   <div className="text-right">
                     <div className="font-mono text-lg">{player.totalScore} points</div>
-                    <div className="text-sm text-gray-800">{player.wins} rounds won</div>
+                    <div className="text-sm text-gray-800">{player.wins} {player.wins === 1 ? 'round' : 'rounds'} won</div>
                   </div>
                 </div>
               ))}

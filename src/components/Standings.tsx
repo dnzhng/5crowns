@@ -27,7 +27,7 @@ export default function Standings({ playerRankings }: StandingsProps) {
                 </div>
                 <div className="text-right">
                   <div className="font-mono text-lg text-gray-900">{player.totalScore}</div>
-                  <div className="text-xs text-gray-600">{player.wins} wins</div>
+                  <div className="text-xs text-gray-600">{player.wins} {player.wins === 1 ? 'win' : 'wins'}</div>
                 </div>
               </div>
             ))}

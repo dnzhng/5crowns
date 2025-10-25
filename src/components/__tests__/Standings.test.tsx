@@ -54,11 +54,11 @@ describe('Standings', () => {
 
   it('displays win counts correctly', () => {
     render(<Standings {...defaultProps} />);
-    
+
     expect(screen.getByText('5 wins')).toBeInTheDocument();
     expect(screen.getByText('3 wins')).toBeInTheDocument();
     expect(screen.getByText('2 wins')).toBeInTheDocument();
-    expect(screen.getByText('1 wins')).toBeInTheDocument();
+    expect(screen.getByText('1 win')).toBeInTheDocument();
   });
 
   it('applies special styling to first place', () => {
@@ -86,6 +86,23 @@ describe('Standings', () => {
       expect(screen.getByText('🥇')).toBeInTheDocument();
       expect(screen.getByText('85')).toBeInTheDocument();
       expect(screen.getByText('5 wins')).toBeInTheDocument();
+    });
+
+    it('uses singular "win" for 1 win', () => {
+      const singleWinPlayer = [{ id: '1', name: 'Alice', totalScore: 85, wins: 1 }];
+
+      render(<Standings playerRankings={singleWinPlayer} />);
+
+      expect(screen.getByText('1 win')).toBeInTheDocument();
+      expect(screen.queryByText('1 wins')).not.toBeInTheDocument();
+    });
+
+    it('uses singular "win" for 0 wins', () => {
+      const noWinPlayer = [{ id: '1', name: 'Alice', totalScore: 85, wins: 0 }];
+
+      render(<Standings playerRankings={noWinPlayer} />);
+
+      expect(screen.getByText('0 wins')).toBeInTheDocument();
     });
   });
 
