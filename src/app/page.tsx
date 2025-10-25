@@ -6,6 +6,7 @@ import PlayerManagement from '../components/PlayerManagement';
 import GameComplete from '../components/GameComplete';
 import RoundsTable from '../components/RoundsTable';
 import Standings from '../components/Standings';
+import RulesModal from '../components/RulesModal';
 import { saveGameState, loadGameState, clearGameState } from '../utils/gameStorage';
 import { sortPlayerRankings } from '../utils/playerSorting';
 import { shuffleArray } from '../utils/playerOrder';
@@ -16,6 +17,7 @@ export default function FiveCrownsScorekeeper() {
   const [showPlayerManagement, setShowPlayerManagement] = useState(true);
   const [playerOrder, setPlayerOrder] = useState<string[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [showRulesModal, setShowRulesModal] = useState(false);
 
   // Load game state from session storage on mount
   useEffect(() => {
@@ -211,7 +213,15 @@ export default function FiveCrownsScorekeeper() {
             Five Crowns
           </h1>
           <div className="w-16 h-0.5 bg-gray-900 mx-auto mt-2"></div>
-          
+
+          {/* Rules Button */}
+          <button
+            onClick={() => setShowRulesModal(true)}
+            className="absolute top-0 left-0 px-4 py-2 text-sm text-gray-600 hover:text-blue-600 transition-colors border border-gray-300 rounded-lg hover:border-blue-300"
+          >
+            Rules
+          </button>
+
           {/* Clear Game Button */}
           {(players.length > 0 || rounds.length > 0) && (
             <button
@@ -256,6 +266,8 @@ export default function FiveCrownsScorekeeper() {
           </div>
         )}
       </div>
+
+      <RulesModal isOpen={showRulesModal} onClose={() => setShowRulesModal(false)} />
     </div>
   );
 }
