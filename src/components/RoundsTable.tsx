@@ -39,11 +39,11 @@ export default function RoundsTable({
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 sticky top-0 z-10 shadow-sm">
               <tr>
-                <th className="text-left px-6 py-3 text-sm font-medium text-gray-900">Round</th>
+                <th className="text-left px-6 py-3 text-sm font-medium text-gray-900 bg-gray-50">Round</th>
                 {players.map(player => (
-                  <th key={player.id} className="text-center px-4 py-3 text-sm font-medium text-gray-900 min-w-[120px]">
+                  <th key={player.id} className="text-center px-4 py-3 text-sm font-medium text-gray-900 min-w-[120px] bg-gray-50">
                     {player.name}
                   </th>
                 ))}
