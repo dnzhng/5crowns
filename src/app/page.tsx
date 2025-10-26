@@ -18,6 +18,7 @@ export default function FiveCrownsScorekeeper() {
   const [playerOrder, setPlayerOrder] = useState<string[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showRulesModal, setShowRulesModal] = useState(false);
+  const [gameFinished, setGameFinished] = useState(false);
 
   // Load game state from session storage on mount
   useEffect(() => {
@@ -163,11 +164,15 @@ export default function FiveCrownsScorekeeper() {
     return sortPlayerRankings(rankings);
   };
 
-  const isGameComplete = () => rounds.length === 11;
+  const isGameComplete = () => rounds.length === 11 && gameFinished;
   const getWinner = () => {
     if (!isGameComplete()) return null;
     const rankings = getPlayerRankings();
     return rankings[0];
+  };
+
+  const finishGame = () => {
+    setGameFinished(true);
   };
 
   const startNewGame = () => {
@@ -175,6 +180,7 @@ export default function FiveCrownsScorekeeper() {
     setPlayers([]);
     setPlayerOrder([]);
     setShowPlayerManagement(true);
+    setGameFinished(false);
     clearGameState(); // Clear session storage when starting new game
   };
 
@@ -252,6 +258,7 @@ export default function FiveCrownsScorekeeper() {
               onUpdateRoundScore={updateRoundScore}
               onToggleRoundWinner={toggleRoundWinner}
               onAddRound={addRound}
+              onFinishGame={finishGame}
             />
             
             {rounds.length > 0 && (

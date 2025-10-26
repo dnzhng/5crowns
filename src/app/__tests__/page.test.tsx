@@ -68,13 +68,14 @@ jest.mock('../../components/ScoreGraph', () => {
 });
 
 jest.mock('../../components/RoundsTable', () => {
-  return function MockRoundsTable({ players, rounds, playerOrder, onAddRound, onUpdateRoundScore, onToggleRoundWinner }: {
+  return function MockRoundsTable({ players, rounds, playerOrder, onAddRound, onUpdateRoundScore, onToggleRoundWinner, onFinishGame }: {
     players: Array<{ id: string; name: string }>;
     rounds: Array<{ roundNumber: number }>;
     playerOrder: string[];
     onAddRound: () => void;
     onUpdateRoundScore: (roundIndex: number, playerId: string, score: number) => void;
     onToggleRoundWinner: (roundIndex: number, playerId: string) => void;
+    onFinishGame: () => void;
   }) {
     const firstPlayerId = players[0]?.id || '1';
     return (
@@ -85,6 +86,7 @@ jest.mock('../../components/RoundsTable', () => {
         <button onClick={onAddRound}>Add Round</button>
         <button onClick={() => onUpdateRoundScore(0, firstPlayerId, 50)}>Update Score</button>
         <button onClick={() => onToggleRoundWinner(0, firstPlayerId)}>Toggle Winner</button>
+        <button onClick={onFinishGame}>Finish Game</button>
       </div>
     );
   };
@@ -210,7 +212,7 @@ describe('FiveCrownsScorekeeper Integration', () => {
     });
   });
 
-  it('does not create new round when winner selected on round 11', async () => {
+  it('shows rounds table when 11 rounds exist but game not finished', async () => {
     // Create a game state with 11 rounds
     const elevenRounds = Array.from({ length: 11 }, (_, i) => ({
       roundNumber: i + 1,
@@ -233,10 +235,10 @@ describe('FiveCrownsScorekeeper Integration', () => {
       expect(screen.queryByText('Loading game...')).not.toBeInTheDocument();
     });
 
-    // Game should be complete, not showing rounds table
+    // Game should still show rounds table until user clicks Finish Game
     await waitFor(() => {
-      expect(screen.queryByTestId('rounds-table')).not.toBeInTheDocument();
-      expect(screen.getByTestId('game-complete')).toBeInTheDocument();
+      expect(screen.getByTestId('rounds-table')).toBeInTheDocument();
+      expect(screen.queryByTestId('game-complete')).not.toBeInTheDocument();
     });
   });
 

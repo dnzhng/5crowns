@@ -31,7 +31,8 @@ const defaultProps = {
   playerOrder: ['1', '2'], // Player IDs in turn order
   onUpdateRoundScore: jest.fn(),
   onToggleRoundWinner: jest.fn(),
-  onAddRound: jest.fn()
+  onAddRound: jest.fn(),
+  onFinishGame: jest.fn()
 };
 
 describe('RoundsTable', () => {
@@ -188,14 +189,13 @@ describe('RoundsTable', () => {
       expect(defaultProps.onToggleRoundWinner).toHaveBeenCalledWith(0, '2');
     });
 
-    it('shows add next round button when less than 11 rounds', () => {
+    it('does not show finish game button when less than 11 rounds', () => {
       render(<RoundsTable {...defaultProps} />);
 
-      // With 2 rounds, next round is 3, which maps to card value "5"
-      expect(screen.getByText('+ Add Round (5)')).toBeInTheDocument();
+      expect(screen.queryByText('Finish Game')).not.toBeInTheDocument();
     });
 
-    it('does not show add round button when 11 rounds exist', () => {
+    it('shows finish game button when 11 rounds exist', () => {
       const elevenRounds = Array.from({ length: 11 }, (_, i) => ({
         roundNumber: i + 1,
         scores: [
@@ -211,16 +211,29 @@ describe('RoundsTable', () => {
         />
       );
 
-      expect(screen.queryByText(/Add Round/)).not.toBeInTheDocument();
+      expect(screen.getByText('Finish Game')).toBeInTheDocument();
     });
 
-    it('calls onAddRound when add round button is clicked', async () => {
+    it('calls onFinishGame when finish game button is clicked', async () => {
+      const elevenRounds = Array.from({ length: 11 }, (_, i) => ({
+        roundNumber: i + 1,
+        scores: [
+          { playerId: '1', score: 0, isWinner: false },
+          { playerId: '2', score: 0, isWinner: false }
+        ]
+      }));
+
       const user = userEvent.setup();
-      render(<RoundsTable {...defaultProps} />);
+      render(
+        <RoundsTable
+          {...defaultProps}
+          rounds={elevenRounds}
+        />
+      );
 
-      await user.click(screen.getByText('+ Add Round (5)'));
+      await user.click(screen.getByText('Finish Game'));
 
-      expect(defaultProps.onAddRound).toHaveBeenCalledTimes(1);
+      expect(defaultProps.onFinishGame).toHaveBeenCalledTimes(1);
     });
   });
 

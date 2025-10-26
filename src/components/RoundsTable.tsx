@@ -11,6 +11,7 @@ interface RoundsTableProps {
   onUpdateRoundScore: (roundIndex: number, playerId: string, score: number) => void;
   onToggleRoundWinner: (roundIndex: number, playerId: string) => void;
   onAddRound: () => void;
+  onFinishGame: () => void;
 }
 
 export default function RoundsTable({
@@ -19,7 +20,8 @@ export default function RoundsTable({
   playerOrder,
   onUpdateRoundScore,
   onToggleRoundWinner,
-  onAddRound
+  onAddRound,
+  onFinishGame
 }: RoundsTableProps) {
   if (rounds.length === 0) {
     return (
@@ -66,7 +68,7 @@ export default function RoundsTable({
                         </div>
                         {currentTurnPlayer && (
                           <div className="text-xs text-gray-600 text-center whitespace-nowrap">
-                            {currentTurnPlayer.name}'s turn
+                            {currentTurnPlayer.name} {round.roundNumber === 1 ? 'starts' : "'s turn"}
                           </div>
                         )}
                       </div>
@@ -117,12 +119,12 @@ export default function RoundsTable({
         </div>
       </div>
       
-      {rounds.length < 11 && (
+      {rounds.length === 11 && (
         <button
-          onClick={onAddRound}
-          className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-900 hover:text-gray-900 transition-colors"
+          onClick={onFinishGame}
+          className="w-full py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-lg"
         >
-          + Add Round ({getRoundCardValue(rounds.length + 1)})
+          Finish Game
         </button>
       )}
     </div>
