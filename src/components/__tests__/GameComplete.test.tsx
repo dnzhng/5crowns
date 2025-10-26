@@ -64,7 +64,7 @@ describe('GameComplete', () => {
     
     expect(screen.getByText('🏆 Congratulations Alice! 🏆')).toBeInTheDocument();
     expect(screen.getByText('You won Five Crowns with a final score of 85 points!')).toBeInTheDocument();
-    expect(screen.getByText('Rounds won: 5 out of 13')).toBeInTheDocument();
+    expect(screen.getByText('Rounds won: 5 out of 11')).toBeInTheDocument();
   });
 
   it('renders final rankings section', () => {

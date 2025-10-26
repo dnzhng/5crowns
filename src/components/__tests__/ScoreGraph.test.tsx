@@ -51,6 +51,7 @@ describe('ScoreGraph', () => {
 
   it('renders round labels', () => {
     render(<ScoreGraph players={mockPlayers} rounds={mockRounds} />);
+    expect(screen.getByText('Start')).toBeInTheDocument();
     expect(screen.getByText('R1')).toBeInTheDocument();
     expect(screen.getByText('R2')).toBeInTheDocument();
     expect(screen.getByText('R3')).toBeInTheDocument();
@@ -83,8 +84,8 @@ describe('ScoreGraph', () => {
   it('renders data points as circles', () => {
     const { container } = render(<ScoreGraph players={mockPlayers} rounds={mockRounds} />);
     const circles = container.querySelectorAll('circle');
-    // Should have one circle per player per round
-    expect(circles.length).toBe(mockPlayers.length * mockRounds.length);
+    // Should have one circle per player per round, plus round 0
+    expect(circles.length).toBe(mockPlayers.length * (mockRounds.length + 1));
   });
 
   it('handles single player correctly', () => {

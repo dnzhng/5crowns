@@ -68,9 +68,9 @@ describe('getCurrentTurnPlayer', () => {
     expect(getCurrentTurnPlayer(playerOrder, 5)).toBe('player2');
   });
 
-  it('handles round 13 correctly', () => {
-    // (13 - 1) % 3 = 12 % 3 = 0, so should be player1 (index 0)
-    expect(getCurrentTurnPlayer(playerOrder, 13)).toBe('player1');
+  it('handles round 11 correctly', () => {
+    // (11 - 1) % 3 = 10 % 3 = 1, so should be player2 (index 1)
+    expect(getCurrentTurnPlayer(playerOrder, 11)).toBe('player2');
   });
 
   it('returns null for empty player order', () => {
@@ -80,7 +80,7 @@ describe('getCurrentTurnPlayer', () => {
   it('works with single player', () => {
     expect(getCurrentTurnPlayer(['player1'], 1)).toBe('player1');
     expect(getCurrentTurnPlayer(['player1'], 5)).toBe('player1');
-    expect(getCurrentTurnPlayer(['player1'], 13)).toBe('player1');
+    expect(getCurrentTurnPlayer(['player1'], 11)).toBe('player1');
   });
 
   it('works with two players', () => {

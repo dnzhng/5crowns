@@ -71,7 +71,7 @@ export default function FiveCrownsScorekeeper() {
   };
 
   const addRound = () => {
-    if (players.length === 0 || rounds.length >= 13) return;
+    if (players.length === 0 || rounds.length >= 11) return;
 
     const newRound: Round = {
       roundNumber: rounds.length + 1,
@@ -126,9 +126,9 @@ export default function FiveCrownsScorekeeper() {
 
       // Auto-create next round if:
       // 1. A winner was selected (not deselected)
-      // 2. We're not already at 13 rounds
+      // 2. We're not already at 11 rounds
       // 3. This is the last round (prevents adding multiple rounds)
-      if (selectedWinner && updatedRounds.length < 13 && roundIndex === updatedRounds.length - 1) {
+      if (selectedWinner && updatedRounds.length < 11 && roundIndex === updatedRounds.length - 1) {
         const newRound: Round = {
           roundNumber: updatedRounds.length + 1,
           scores: players.map(player => ({
@@ -163,7 +163,7 @@ export default function FiveCrownsScorekeeper() {
     return sortPlayerRankings(rankings);
   };
 
-  const isGameComplete = () => rounds.length === 13;
+  const isGameComplete = () => rounds.length === 11;
   const getWinner = () => {
     if (!isGameComplete()) return null;
     const rankings = getPlayerRankings();

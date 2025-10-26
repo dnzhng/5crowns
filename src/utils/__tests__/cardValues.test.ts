@@ -45,15 +45,9 @@ describe('getRoundCardValue', () => {
     expect(getRoundCardValue(11)).toBe('K');
   });
 
-  it('maps round 12 to card A (Ace)', () => {
-    expect(getRoundCardValue(12)).toBe('A');
-  });
-
-  it('maps round 13 to card 2', () => {
-    expect(getRoundCardValue(13)).toBe('2');
-  });
-
   it('handles unmapped round numbers by returning string of number', () => {
+    expect(getRoundCardValue(12)).toBe('12');
+    expect(getRoundCardValue(13)).toBe('13');
     expect(getRoundCardValue(14)).toBe('14');
     expect(getRoundCardValue(0)).toBe('0');
     expect(getRoundCardValue(100)).toBe('100');

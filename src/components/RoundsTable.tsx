@@ -26,9 +26,9 @@ export default function RoundsTable({
       <div className="mb-8">
         <button
           onClick={onAddRound}
-          className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-900 hover:text-gray-900 transition-colors"
+          className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-900 hover:text-gray-900 transition-colors font-medium"
         >
-          + Add Round ({getRoundCardValue(1)})
+          Start Game
         </button>
       </div>
     );
@@ -117,7 +117,7 @@ export default function RoundsTable({
         </div>
       </div>
       
-      {rounds.length < 13 && (
+      {rounds.length < 11 && (
         <button
           onClick={onAddRound}
           className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-900 hover:text-gray-900 transition-colors"

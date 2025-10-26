@@ -25,7 +25,7 @@ export default function GameComplete({ winner, playerRankings, players, rounds, 
               You won Five Crowns with a final score of {winner.totalScore} points!
             </p>
             <div className="text-lg text-gray-700">
-              Rounds won: {winner.wins} out of 13
+              Rounds won: {winner.wins} out of 11
             </div>
           </div>
           

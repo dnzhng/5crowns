@@ -29,21 +29,26 @@ export default function ScoreGraph({ players, rounds }: ScoreGraphProps) {
   const chartHeight = height - padding.top - padding.bottom;
 
   // Calculate cumulative scores for each player at each round
+  // Start with round 0 (score = 0 for all players)
   const playerScores = players.map(player => {
     let cumulativeScore = 0;
-    return rounds.map(round => {
+    const scores = [0]; // Start at 0
+    rounds.forEach(round => {
       const score = round.scores.find(s => s.playerId === player.id)?.score || 0;
       cumulativeScore += score;
-      return cumulativeScore;
+      scores.push(cumulativeScore);
     });
+    return scores;
   });
 
   // Find max score for scaling
   const maxScore = Math.max(...playerScores.flat(), 1);
 
   // Scale functions
-  const scaleX = (roundIndex: number) => {
-    return padding.left + (roundIndex / (rounds.length - 1 || 1)) * chartWidth;
+  // roundIndex now includes round 0, so total points = rounds.length + 1
+  const scaleX = (dataPointIndex: number) => {
+    const totalPoints = rounds.length; // 0, 1, 2, ... rounds.length
+    return padding.left + (dataPointIndex / totalPoints) * chartWidth;
   };
 
   const scaleY = (score: number) => {
@@ -81,11 +86,20 @@ export default function ScoreGraph({ players, rounds }: ScoreGraphProps) {
           );
         })}
 
-        {/* X-axis labels (round numbers) */}
+        {/* X-axis labels (round 0 = "Start", then round numbers) */}
+        <text
+          x={scaleX(0)}
+          y={height - padding.bottom + 20}
+          textAnchor="middle"
+          fontSize="12"
+          fill="#6b7280"
+        >
+          Start
+        </text>
         {rounds.map((round, i) => (
           <text
             key={round.roundNumber}
-            x={scaleX(i)}
+            x={scaleX(i + 1)}
             y={height - padding.bottom + 20}
             textAnchor="middle"
             fontSize="12"

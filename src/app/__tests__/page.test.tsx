@@ -210,16 +210,16 @@ describe('FiveCrownsScorekeeper Integration', () => {
     });
   });
 
-  it('does not create new round when winner selected on round 13', async () => {
-    // Create a game state with 13 rounds
-    const thirteenRounds = Array.from({ length: 13 }, (_, i) => ({
+  it('does not create new round when winner selected on round 11', async () => {
+    // Create a game state with 11 rounds
+    const elevenRounds = Array.from({ length: 11 }, (_, i) => ({
       roundNumber: i + 1,
       scores: [{ playerId: '1', score: 0, isWinner: false }]
     }));
 
     const savedState = {
       players: [{ id: '1', name: 'Test Player' }],
-      rounds: thirteenRounds,
+      rounds: elevenRounds,
       showPlayerManagement: false,
       lastUpdatedAt: '2024-01-01T00:00:00.000Z'
     };
@@ -292,11 +292,11 @@ describe('FiveCrownsScorekeeper Integration', () => {
     });
   });
 
-  it('shows game complete screen when 13 rounds are played', () => {
-    // This test would need to be expanded to actually play 13 rounds
+  it('shows game complete screen when 11 rounds are played', () => {
+    // This test would need to be expanded to actually play 11 rounds
     // For now, we test the basic structure
     render(<FiveCrownsScorekeeper />);
-    
+
     expect(screen.getByText('Five Crowns')).toBeInTheDocument();
   });
 

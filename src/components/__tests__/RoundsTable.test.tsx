@@ -40,7 +40,7 @@ describe('RoundsTable', () => {
   });
 
   describe('when no rounds exist', () => {
-    it('renders add first round button', () => {
+    it('renders start game button', () => {
       render(
         <RoundsTable
           {...defaultProps}
@@ -48,11 +48,10 @@ describe('RoundsTable', () => {
         />
       );
 
-      // First round (round 1) maps to card value "3"
-      expect(screen.getByText('+ Add Round (3)')).toBeInTheDocument();
+      expect(screen.getByText('Start Game')).toBeInTheDocument();
     });
 
-    it('calls onAddRound when add round button is clicked', async () => {
+    it('calls onAddRound when start game button is clicked', async () => {
       const user = userEvent.setup();
       render(
         <RoundsTable
@@ -61,8 +60,7 @@ describe('RoundsTable', () => {
         />
       );
 
-      // First round (round 1) maps to card value "3"
-      await user.click(screen.getByText('+ Add Round (3)'));
+      await user.click(screen.getByText('Start Game'));
 
       expect(defaultProps.onAddRound).toHaveBeenCalledTimes(1);
     });
@@ -190,29 +188,29 @@ describe('RoundsTable', () => {
       expect(defaultProps.onToggleRoundWinner).toHaveBeenCalledWith(0, '2');
     });
 
-    it('shows add next round button when less than 13 rounds', () => {
+    it('shows add next round button when less than 11 rounds', () => {
       render(<RoundsTable {...defaultProps} />);
 
       // With 2 rounds, next round is 3, which maps to card value "5"
       expect(screen.getByText('+ Add Round (5)')).toBeInTheDocument();
     });
 
-    it('does not show add round button when 13 rounds exist', () => {
-      const thirteenRounds = Array.from({ length: 13 }, (_, i) => ({
+    it('does not show add round button when 11 rounds exist', () => {
+      const elevenRounds = Array.from({ length: 11 }, (_, i) => ({
         roundNumber: i + 1,
         scores: [
           { playerId: '1', score: 0, isWinner: false },
           { playerId: '2', score: 0, isWinner: false }
         ]
       }));
-      
+
       render(
         <RoundsTable
           {...defaultProps}
-          rounds={thirteenRounds}
+          rounds={elevenRounds}
         />
       );
-      
+
       expect(screen.queryByText(/Add Round/)).not.toBeInTheDocument();
     });
 
