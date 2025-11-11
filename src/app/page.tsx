@@ -9,7 +9,7 @@ import Standings from '../components/Standings';
 import RulesModal from '../components/RulesModal';
 import { saveGameState, loadGameState, clearGameState } from '../utils/gameStorage';
 import { sortPlayerRankings } from '../utils/playerSorting';
-import { shuffleArray } from '../utils/playerOrder';
+import { rotateToRandomStart } from '../utils/playerOrder';
 
 export default function FiveCrownsScorekeeper() {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -87,8 +87,8 @@ export default function FiveCrownsScorekeeper() {
     // Initialize player order when adding the first round
     if (rounds.length === 0) {
       setShowPlayerManagement(false);
-      const shuffledOrder = shuffleArray(players.map(p => p.id));
-      setPlayerOrder(shuffledOrder);
+      const rotatedOrder = rotateToRandomStart(players.map(p => p.id));
+      setPlayerOrder(rotatedOrder);
     }
   };
 

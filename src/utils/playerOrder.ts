@@ -1,13 +1,13 @@
 /**
- * Shuffle an array using Fisher-Yates algorithm
+ * Rotate an array to start from a random position
+ * Maintains the original circular order but randomizes who starts first
+ * @param array - The array to rotate
+ * @returns A new array rotated to start from a random position
  */
-export function shuffleArray<T>(array: T[]): T[] {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
+export function rotateToRandomStart<T>(array: T[]): T[] {
+  if (array.length === 0) return [];
+  const startIndex = Math.floor(Math.random() * array.length);
+  return [...array.slice(startIndex), ...array.slice(0, startIndex)];
 }
 
 /**
