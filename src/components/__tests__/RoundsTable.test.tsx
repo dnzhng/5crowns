@@ -28,9 +28,11 @@ const mockRounds: Round[] = [
 const defaultProps = {
   players: mockPlayers,
   rounds: mockRounds,
+  playerOrder: ['1', '2'], // Player IDs in turn order
   onUpdateRoundScore: jest.fn(),
   onToggleRoundWinner: jest.fn(),
-  onAddRound: jest.fn()
+  onAddRound: jest.fn(),
+  onFinishGame: jest.fn()
 };
 
 describe('RoundsTable', () => {
@@ -39,18 +41,18 @@ describe('RoundsTable', () => {
   });
 
   describe('when no rounds exist', () => {
-    it('renders add first round button', () => {
+    it('renders start game button', () => {
       render(
         <RoundsTable
           {...defaultProps}
           rounds={[]}
         />
       );
-      
-      expect(screen.getByText('+ Add Round 1')).toBeInTheDocument();
+
+      expect(screen.getByText('Start Game')).toBeInTheDocument();
     });
 
-    it('calls onAddRound when add round button is clicked', async () => {
+    it('calls onAddRound when start game button is clicked', async () => {
       const user = userEvent.setup();
       render(
         <RoundsTable
@@ -58,9 +60,9 @@ describe('RoundsTable', () => {
           rounds={[]}
         />
       );
-      
-      await user.click(screen.getByText('+ Add Round 1'));
-      
+
+      await user.click(screen.getByText('Start Game'));
+
       expect(defaultProps.onAddRound).toHaveBeenCalledTimes(1);
     });
   });
@@ -75,11 +77,13 @@ describe('RoundsTable', () => {
       expect(screen.getByText('Bob')).toBeInTheDocument();
     });
 
-    it('displays round numbers correctly', () => {
+    it('displays card values instead of round numbers', () => {
       render(<RoundsTable {...defaultProps} />);
-      
-      expect(screen.getByText('1')).toBeInTheDocument();
-      expect(screen.getByText('2')).toBeInTheDocument();
+
+      // Round 1 should show card value "3"
+      expect(screen.getByText('3')).toBeInTheDocument();
+      // Round 2 should show card value "4"
+      expect(screen.getByText('4')).toBeInTheDocument();
     });
 
     it('displays player scores in input fields', () => {
@@ -121,12 +125,48 @@ describe('RoundsTable', () => {
     it('handles non-numeric input gracefully', async () => {
       const user = userEvent.setup();
       render(<RoundsTable {...defaultProps} />);
-      
+
       const scoreInput = screen.getByDisplayValue('30');
       await user.clear(scoreInput);
       await user.type(scoreInput, 'abc');
-      
+
       expect(defaultProps.onUpdateRoundScore).toHaveBeenCalledWith(0, '1', 0);
+    });
+
+    it('clears input value on focus when value is 0', async () => {
+      const mockRoundsWithZero: Round[] = [
+        {
+          roundNumber: 1,
+          scores: [
+            { playerId: '1', score: 0, isWinner: false },
+            { playerId: '2', score: 0, isWinner: false }
+          ]
+        }
+      ];
+
+      const user = userEvent.setup();
+      render(<RoundsTable {...defaultProps} rounds={mockRoundsWithZero} />);
+
+      const scoreInputs = screen.getAllByDisplayValue('0');
+
+      // Focus on the input
+      await user.click(scoreInputs[0]);
+
+      // After focus, the input should be cleared (empty string)
+      expect(scoreInputs[0]).toHaveValue(null);
+    });
+
+    it('does not clear input value on focus when value is not 0', async () => {
+      const user = userEvent.setup();
+      render(<RoundsTable {...defaultProps} />);
+
+      const scoreInput = screen.getByDisplayValue('30');
+
+      // Focus on the input
+      await user.click(scoreInput);
+
+      // Value should remain unchanged
+      expect(scoreInput).toHaveValue(30);
     });
 
     it('calls onToggleRoundWinner when winner button is clicked', async () => {
@@ -149,38 +189,51 @@ describe('RoundsTable', () => {
       expect(defaultProps.onToggleRoundWinner).toHaveBeenCalledWith(0, '2');
     });
 
-    it('shows add next round button when less than 13 rounds', () => {
+    it('does not show finish game button when less than 11 rounds', () => {
       render(<RoundsTable {...defaultProps} />);
-      
-      expect(screen.getByText('+ Add Round 3')).toBeInTheDocument();
+
+      expect(screen.queryByText('Finish Game')).not.toBeInTheDocument();
     });
 
-    it('does not show add round button when 13 rounds exist', () => {
-      const thirteenRounds = Array.from({ length: 13 }, (_, i) => ({
+    it('shows finish game button when 11 rounds exist', () => {
+      const elevenRounds = Array.from({ length: 11 }, (_, i) => ({
         roundNumber: i + 1,
         scores: [
           { playerId: '1', score: 0, isWinner: false },
           { playerId: '2', score: 0, isWinner: false }
         ]
       }));
-      
+
       render(
         <RoundsTable
           {...defaultProps}
-          rounds={thirteenRounds}
+          rounds={elevenRounds}
         />
       );
-      
-      expect(screen.queryByText(/Add Round/)).not.toBeInTheDocument();
+
+      expect(screen.getByText('Finish Game')).toBeInTheDocument();
     });
 
-    it('calls onAddRound when add round button is clicked', async () => {
+    it('calls onFinishGame when finish game button is clicked', async () => {
+      const elevenRounds = Array.from({ length: 11 }, (_, i) => ({
+        roundNumber: i + 1,
+        scores: [
+          { playerId: '1', score: 0, isWinner: false },
+          { playerId: '2', score: 0, isWinner: false }
+        ]
+      }));
+
       const user = userEvent.setup();
-      render(<RoundsTable {...defaultProps} />);
-      
-      await user.click(screen.getByText('+ Add Round 3'));
-      
-      expect(defaultProps.onAddRound).toHaveBeenCalledTimes(1);
+      render(
+        <RoundsTable
+          {...defaultProps}
+          rounds={elevenRounds}
+        />
+      );
+
+      await user.click(screen.getByText('Finish Game'));
+
+      expect(defaultProps.onFinishGame).toHaveBeenCalledTimes(1);
     });
   });
 

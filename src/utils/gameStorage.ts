@@ -4,6 +4,7 @@ export interface GameState {
   players: Player[];
   rounds: Round[];
   showPlayerManagement: boolean;
+  playerOrder?: string[]; // Array of player IDs in turn order
   gameStartedAt?: string;
   lastUpdatedAt?: string;
 }

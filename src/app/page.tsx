@@ -6,13 +6,19 @@ import PlayerManagement from '../components/PlayerManagement';
 import GameComplete from '../components/GameComplete';
 import RoundsTable from '../components/RoundsTable';
 import Standings from '../components/Standings';
+import RulesModal from '../components/RulesModal';
 import { saveGameState, loadGameState, clearGameState } from '../utils/gameStorage';
+import { sortPlayerRankings } from '../utils/playerSorting';
+import { shuffleArray } from '../utils/playerOrder';
 
 export default function FiveCrownsScorekeeper() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [rounds, setRounds] = useState<Round[]>([]);
   const [showPlayerManagement, setShowPlayerManagement] = useState(true);
+  const [playerOrder, setPlayerOrder] = useState<string[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [showRulesModal, setShowRulesModal] = useState(false);
+  const [gameFinished, setGameFinished] = useState(false);
 
   // Load game state from session storage on mount
   useEffect(() => {
@@ -22,6 +28,7 @@ export default function FiveCrownsScorekeeper() {
         setPlayers(savedState.players);
         setRounds(savedState.rounds);
         setShowPlayerManagement(savedState.showPlayerManagement);
+        setPlayerOrder(savedState.playerOrder || []);
       }
     } catch (error) {
       console.warn('Failed to load saved game state:', error);
@@ -38,8 +45,9 @@ export default function FiveCrownsScorekeeper() {
       players,
       rounds,
       showPlayerManagement,
+      playerOrder,
     });
-  }, [players, rounds, showPlayerManagement, isLoaded]);
+  }, [players, rounds, showPlayerManagement, playerOrder, isLoaded]);
 
   const addPlayer = (name: string) => {
     const newPlayer: Player = {
@@ -64,8 +72,8 @@ export default function FiveCrownsScorekeeper() {
   };
 
   const addRound = () => {
-    if (players.length === 0 || rounds.length >= 13) return;
-    
+    if (players.length === 0 || rounds.length >= 11) return;
+
     const newRound: Round = {
       roundNumber: rounds.length + 1,
       scores: players.map(player => ({
@@ -75,10 +83,12 @@ export default function FiveCrownsScorekeeper() {
       }))
     };
     setRounds([...rounds, newRound]);
-    
-    // Hide player management after first round
+
+    // Initialize player order when adding the first round
     if (rounds.length === 0) {
       setShowPlayerManagement(false);
+      const shuffledOrder = shuffleArray(players.map(p => p.id));
+      setPlayerOrder(shuffledOrder);
     }
   };
 
@@ -96,18 +106,43 @@ export default function FiveCrownsScorekeeper() {
   };
 
   const toggleRoundWinner = (roundIndex: number, playerId: string) => {
-    setRounds(rounds.map((round, index) => 
-      index === roundIndex
-        ? {
-            ...round,
-            scores: round.scores.map(s =>
-              s.playerId === playerId 
-                ? { ...s, isWinner: !s.isWinner }
-                : { ...s, isWinner: false } // Only one winner per round
-            )
-          }
-        : round
-    ));
+    setRounds((prevRounds) => {
+      const updatedRounds = prevRounds.map((round, index) =>
+        index === roundIndex
+          ? {
+              ...round,
+              scores: round.scores.map(s =>
+                s.playerId === playerId
+                  ? { ...s, isWinner: !s.isWinner }
+                  : { ...s, isWinner: false } // Only one winner per round
+              )
+            }
+          : round
+      );
+
+      // Check if a winner was just selected (not deselected)
+      const selectedWinner = updatedRounds[roundIndex].scores.find(
+        s => s.playerId === playerId && s.isWinner
+      );
+
+      // Auto-create next round if:
+      // 1. A winner was selected (not deselected)
+      // 2. We're not already at 11 rounds
+      // 3. This is the last round (prevents adding multiple rounds)
+      if (selectedWinner && updatedRounds.length < 11 && roundIndex === updatedRounds.length - 1) {
+        const newRound: Round = {
+          roundNumber: updatedRounds.length + 1,
+          scores: players.map(player => ({
+            playerId: player.id,
+            score: 0,
+            isWinner: false
+          }))
+        };
+        return [...updatedRounds, newRound];
+      }
+
+      return updatedRounds;
+    });
   };
 
   const calculateTotalScore = (playerId: string) => {
@@ -118,28 +153,34 @@ export default function FiveCrownsScorekeeper() {
   };
 
   const getPlayerRankings = (): PlayerRanking[] => {
-    return players
+    const rankings = players
       .map(player => ({
         ...player,
         totalScore: calculateTotalScore(player.id),
-        wins: rounds.filter(round => 
+        wins: rounds.filter(round =>
           round.scores.find(s => s.playerId === player.id && s.isWinner)
         ).length
-      }))
-      .sort((a, b) => a.totalScore - b.totalScore);
+      }));
+    return sortPlayerRankings(rankings);
   };
 
-  const isGameComplete = () => rounds.length === 13;
+  const isGameComplete = () => rounds.length === 11 && gameFinished;
   const getWinner = () => {
     if (!isGameComplete()) return null;
     const rankings = getPlayerRankings();
     return rankings[0];
   };
 
+  const finishGame = () => {
+    setGameFinished(true);
+  };
+
   const startNewGame = () => {
     setRounds([]);
     setPlayers([]);
+    setPlayerOrder([]);
     setShowPlayerManagement(true);
+    setGameFinished(false);
     clearGameState(); // Clear session storage when starting new game
   };
 
@@ -159,9 +200,11 @@ export default function FiveCrownsScorekeeper() {
     if (!winner) return null;
     
     return (
-      <GameComplete 
+      <GameComplete
         winner={winner}
         playerRankings={getPlayerRankings()}
+        players={players}
+        rounds={rounds}
         onStartNewGame={startNewGame}
       />
     );
@@ -176,7 +219,15 @@ export default function FiveCrownsScorekeeper() {
             Five Crowns
           </h1>
           <div className="w-16 h-0.5 bg-gray-900 mx-auto mt-2"></div>
-          
+
+          {/* Rules Button */}
+          <button
+            onClick={() => setShowRulesModal(true)}
+            className="absolute top-0 left-0 px-4 py-2 text-sm text-gray-600 hover:text-blue-600 transition-colors border border-gray-300 rounded-lg hover:border-blue-300"
+          >
+            Rules
+          </button>
+
           {/* Clear Game Button */}
           {(players.length > 0 || rounds.length > 0) && (
             <button
@@ -203,9 +254,11 @@ export default function FiveCrownsScorekeeper() {
             <RoundsTable
               players={players}
               rounds={rounds}
+              playerOrder={playerOrder}
               onUpdateRoundScore={updateRoundScore}
               onToggleRoundWinner={toggleRoundWinner}
               onAddRound={addRound}
+              onFinishGame={finishGame}
             />
             
             {rounds.length > 0 && (
@@ -220,6 +273,8 @@ export default function FiveCrownsScorekeeper() {
           </div>
         )}
       </div>
+
+      <RulesModal isOpen={showRulesModal} onClose={() => setShowRulesModal(false)} />
     </div>
   );
 }

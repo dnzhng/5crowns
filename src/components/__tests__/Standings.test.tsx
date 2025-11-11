@@ -29,12 +29,12 @@ describe('Standings', () => {
     expect(screen.getByText('Diana')).toBeInTheDocument();
   });
 
-  it('shows correct medals for top 3 players', () => {
+  it('shows correct crowns for top 3 players', () => {
     render(<Standings {...defaultProps} />);
-    
-    expect(screen.getByText('🥇')).toBeInTheDocument();
-    expect(screen.getByText('🥈')).toBeInTheDocument();
-    expect(screen.getByText('🥉')).toBeInTheDocument();
+
+    expect(screen.getByText('👑👑👑')).toBeInTheDocument();
+    expect(screen.getByText('👑👑')).toBeInTheDocument();
+    expect(screen.getByText('👑')).toBeInTheDocument();
   });
 
   it('shows numeric position for 4th place and below', () => {
@@ -54,11 +54,11 @@ describe('Standings', () => {
 
   it('displays win counts correctly', () => {
     render(<Standings {...defaultProps} />);
-    
+
     expect(screen.getByText('5 wins')).toBeInTheDocument();
     expect(screen.getByText('3 wins')).toBeInTheDocument();
     expect(screen.getByText('2 wins')).toBeInTheDocument();
-    expect(screen.getByText('1 wins')).toBeInTheDocument();
+    expect(screen.getByText('1 win')).toBeInTheDocument();
   });
 
   it('applies special styling to first place', () => {
@@ -81,20 +81,37 @@ describe('Standings', () => {
       const singlePlayer = [mockPlayerRankings[0]];
       
       render(<Standings playerRankings={singlePlayer} />);
-      
+
       expect(screen.getByText('Alice')).toBeInTheDocument();
-      expect(screen.getByText('🥇')).toBeInTheDocument();
+      expect(screen.getByText('👑👑👑')).toBeInTheDocument();
       expect(screen.getByText('85')).toBeInTheDocument();
       expect(screen.getByText('5 wins')).toBeInTheDocument();
+    });
+
+    it('uses singular "win" for 1 win', () => {
+      const singleWinPlayer = [{ id: '1', name: 'Alice', totalScore: 85, wins: 1 }];
+
+      render(<Standings playerRankings={singleWinPlayer} />);
+
+      expect(screen.getByText('1 win')).toBeInTheDocument();
+      expect(screen.queryByText('1 wins')).not.toBeInTheDocument();
+    });
+
+    it('uses singular "win" for 0 wins', () => {
+      const noWinPlayer = [{ id: '1', name: 'Alice', totalScore: 85, wins: 0 }];
+
+      render(<Standings playerRankings={noWinPlayer} />);
+
+      expect(screen.getByText('0 wins')).toBeInTheDocument();
     });
   });
 
   describe('with empty rankings', () => {
     it('renders empty standings', () => {
       render(<Standings playerRankings={[]} />);
-      
+
       expect(screen.getByText('Standings')).toBeInTheDocument();
-      expect(screen.queryByText('🥇')).not.toBeInTheDocument();
+      expect(screen.queryByText('👑👑👑')).not.toBeInTheDocument();
     });
   });
 
@@ -108,10 +125,10 @@ describe('Standings', () => {
       }));
       
       render(<Standings playerRankings={manyPlayers} />);
-      
-      expect(screen.getByText('🥇')).toBeInTheDocument();
-      expect(screen.getByText('🥈')).toBeInTheDocument();
-      expect(screen.getByText('🥉')).toBeInTheDocument();
+
+      expect(screen.getByText('👑👑👑')).toBeInTheDocument();
+      expect(screen.getByText('👑👑')).toBeInTheDocument();
+      expect(screen.getByText('👑')).toBeInTheDocument();
       
       // Find the position number 10 (not the score or wins)
       const tenthPositionElement = screen.getAllByText('10').find(el => 
@@ -127,23 +144,25 @@ describe('Standings', () => {
   });
 
   describe('with tied scores', () => {
-    it('displays tied players in provided order', () => {
+    it('displays tied players in provided order (should be sorted by wins)', () => {
+      // Note: The sorting should happen in the parent component (page.tsx)
+      // This test verifies that Standings displays players in the order provided
       const tiedPlayers: PlayerRanking[] = [
+        { id: '2', name: 'Bob', totalScore: 100, wins: 5 },
         { id: '1', name: 'Alice', totalScore: 100, wins: 3 },
-        { id: '2', name: 'Bob', totalScore: 100, wins: 3 },
         { id: '3', name: 'Charlie', totalScore: 150, wins: 2 }
       ];
-      
+
       render(<Standings playerRankings={tiedPlayers} />);
-      
+
       expect(screen.getByText('Alice')).toBeInTheDocument();
       expect(screen.getByText('Bob')).toBeInTheDocument();
       expect(screen.getByText('Charlie')).toBeInTheDocument();
-      
-      // First two should have medals, third should have medal too
-      expect(screen.getByText('🥇')).toBeInTheDocument();
-      expect(screen.getByText('🥈')).toBeInTheDocument();
-      expect(screen.getByText('🥉')).toBeInTheDocument();
+
+      // First two should have crowns, third should have crown too
+      expect(screen.getByText('👑👑👑')).toBeInTheDocument();
+      expect(screen.getByText('👑👑')).toBeInTheDocument();
+      expect(screen.getByText('👑')).toBeInTheDocument();
     });
   });
 

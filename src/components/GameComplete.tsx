@@ -1,14 +1,17 @@
 'use client';
 
-import { PlayerRanking } from './types';
+import { Player, Round, PlayerRanking } from './types';
+import ScoreGraph from './ScoreGraph';
 
 interface GameCompleteProps {
   winner: PlayerRanking;
   playerRankings: PlayerRanking[];
+  players: Player[];
+  rounds: Round[];
   onStartNewGame: () => void;
 }
 
-export default function GameComplete({ winner, playerRankings, onStartNewGame }: GameCompleteProps) {
+export default function GameComplete({ winner, playerRankings, players, rounds, onStartNewGame }: GameCompleteProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-100 to-yellow-200 p-4">
       <div className="max-w-4xl mx-auto">
@@ -22,7 +25,7 @@ export default function GameComplete({ winner, playerRankings, onStartNewGame }:
               You won Five Crowns with a final score of {winner.totalScore} points!
             </p>
             <div className="text-lg text-gray-700">
-              Rounds won: {winner.wins} out of 13
+              Rounds won: {winner.wins} out of 11
             </div>
           </div>
           
@@ -37,19 +40,21 @@ export default function GameComplete({ winner, playerRankings, onStartNewGame }:
                 }`}>
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">
-                      {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`}
+                      {index === 0 ? '👑👑👑' : index === 1 ? '👑👑' : index === 2 ? '👑' : `${index + 1}.`}
                     </span>
                     <span className="font-semibold text-lg">{player.name}</span>
                   </div>
                   <div className="text-right">
                     <div className="font-mono text-lg">{player.totalScore} points</div>
-                    <div className="text-sm text-gray-800">{player.wins} rounds won</div>
+                    <div className="text-sm text-gray-800">{player.wins} {player.wins === 1 ? 'round' : 'rounds'} won</div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-          
+
+          <ScoreGraph players={players} rounds={rounds} />
+
           <button
             onClick={onStartNewGame}
             className="mt-6 px-8 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium text-lg"
