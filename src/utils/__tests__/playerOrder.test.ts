@@ -1,47 +1,82 @@
-import { shuffleArray, getCurrentTurnPlayer } from '../playerOrder';
+import { rotateToRandomStart, getCurrentTurnPlayer } from '../playerOrder';
 
-describe('shuffleArray', () => {
+describe('rotateToRandomStart', () => {
   it('returns array with same length', () => {
     const input = ['a', 'b', 'c', 'd'];
-    const result = shuffleArray(input);
+    const result = rotateToRandomStart(input);
     expect(result).toHaveLength(input.length);
   });
 
   it('contains all original elements', () => {
     const input = ['a', 'b', 'c', 'd'];
-    const result = shuffleArray(input);
+    const result = rotateToRandomStart(input);
     expect(result.sort()).toEqual(input.sort());
+  });
+
+  it('maintains circular order', () => {
+    // Run multiple times to test different rotations
+    const input = ['a', 'b', 'c', 'd'];
+
+    for (let i = 0; i < 20; i++) {
+      const result = rotateToRandomStart(input);
+
+      // Find where 'a' is in the result
+      const aIndex = result.indexOf('a');
+
+      // Check that elements follow in circular order
+      expect(result[(aIndex + 1) % 4]).toBe('b');
+      expect(result[(aIndex + 2) % 4]).toBe('c');
+      expect(result[(aIndex + 3) % 4]).toBe('d');
+    }
   });
 
   it('does not mutate original array', () => {
     const input = ['a', 'b', 'c', 'd'];
     const original = [...input];
-    shuffleArray(input);
+    rotateToRandomStart(input);
     expect(input).toEqual(original);
   });
 
   it('handles empty array', () => {
-    const result = shuffleArray([]);
+    const result = rotateToRandomStart([]);
     expect(result).toEqual([]);
   });
 
   it('handles single element', () => {
-    const result = shuffleArray(['a']);
+    const result = rotateToRandomStart(['a']);
     expect(result).toEqual(['a']);
   });
 
-  it('produces different orderings (probabilistic test)', () => {
-    // Run shuffle 100 times and check that we get at least one different ordering
+  it('produces different starting positions (probabilistic test)', () => {
+    // Run rotation 100 times and check that we get different starting positions
     const input = ['a', 'b', 'c', 'd', 'e'];
     const results = new Set();
 
     for (let i = 0; i < 100; i++) {
-      const shuffled = shuffleArray(input);
-      results.add(shuffled.join(','));
+      const rotated = rotateToRandomStart(input);
+      results.add(rotated.join(','));
     }
 
-    // With 5 elements, we should get multiple different orderings
+    // With 5 elements, we should get multiple different rotations (up to 5 possible)
     expect(results.size).toBeGreaterThan(1);
+  });
+
+  it('all possible rotations are valid', () => {
+    const input = ['a', 'b', 'c', 'd'];
+    const validRotations = [
+      ['a', 'b', 'c', 'd'],
+      ['b', 'c', 'd', 'a'],
+      ['c', 'd', 'a', 'b'],
+      ['d', 'a', 'b', 'c']
+    ];
+
+    // Run multiple times to increase chance of hitting all rotations
+    for (let i = 0; i < 20; i++) {
+      const result = rotateToRandomStart(input);
+      const resultString = result.join(',');
+      const isValid = validRotations.some(rotation => rotation.join(',') === resultString);
+      expect(isValid).toBe(true);
+    }
   });
 });
 
